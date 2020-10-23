@@ -6,6 +6,7 @@ import { MsigMethod } from '~/common/MsigMethod';
 import { RefreshRounded } from '@material-ui/icons';
 import { useSnackbar } from 'notistack';
 import { Button, Grid, IconButton, Typography } from '@material-ui/core';
+import Link from 'next/link';
 
 import MsigSerialization from '~/common/MsigSerialization';
 import MsigPendingTxn from '~/common/MsigPendingTxn';
@@ -16,7 +17,6 @@ import useWallet from '~/hooks/useWallet';
 import TokenAmount from '~/components/TokenAmount';
 import { useLoadingIndicator } from '~/components/LoadingIndicatorProvider';
 import useSignAndPublish from '~/hooks/useSignAndPublish';
-import Link from '~/components/Link';
 
 export default function MsigInspect(): ReactElement {
   const [actorQuery] = useQueryParam('actor', StringParam);
@@ -259,9 +259,11 @@ export default function MsigInspect(): ReactElement {
               </Typography>
             </Grid>
             <Grid item style={{ textAlign: 'right' }}>
-              <Button variant="contained" color="primary" component={Link} href="/msig-propose">
-                Propose
-              </Button>
+              <Link href={{ pathname: '/msig-propose', query: { actor: activeActor } }} passHref>
+                <Button variant="contained" color="primary">
+                  Propose
+                </Button>
+              </Link>
             </Grid>
           </Grid>
           {pendingTxns?.map((txn) => (

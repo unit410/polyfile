@@ -10,11 +10,11 @@ import {
 import React, { ReactElement, useCallback } from 'react';
 import { useDialog } from 'muibox';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import Link from 'next/link';
 
 import MiddleEllipsis from '~/components/MiddleEllipsis';
 import useIsMounted from '~/hooks/useIsMounted';
 import useFavAddresses from '~/hooks/useFavAddresses';
-import Link from '~/components/Link';
 
 const useStyle = makeStyles(() => ({
   root: {
@@ -64,27 +64,27 @@ export default function Sidebar(): ReactElement {
     <div className={classes.root}>
       <List>
         {favAddresses.map((address) => (
-          <ListItem
-            button
-            key={address}
-            component={Link}
-            href={{ pathname: '/msig', query: { actor: address } }}
-          >
-            <Typography style={{ color: 'white', display: 'flex', width: '100%' }} component="div">
-              <MiddleEllipsis text={address} />
-            </Typography>
-            <ListItemSecondaryAction>
-              <IconButton
-                size="small"
-                edge="end"
-                aria-label="remove"
-                color="primary"
-                onClick={() => handleRemoveActor(address)}
+          <Link key={address} href={{ pathname: '/msig', query: { actor: address } }} passHref>
+            <ListItem button>
+              <Typography
+                style={{ color: 'white', display: 'flex', width: '100%' }}
+                component="div"
               >
-                <HighlightOffIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
+                <MiddleEllipsis text={address} />
+              </Typography>
+              <ListItemSecondaryAction>
+                <IconButton
+                  size="small"
+                  edge="end"
+                  aria-label="remove"
+                  color="primary"
+                  onClick={() => handleRemoveActor(address)}
+                >
+                  <HighlightOffIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+          </Link>
         ))}
         ;
       </List>
