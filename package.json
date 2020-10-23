@@ -22,6 +22,7 @@
     "blakejs": "1.1.0",
     "cbor": "5.1.0",
     "leb128": "0.0.5",
+    "mdi-material-ui": "6.20.0",
     "muibox": "1.4.1",
     "next": "9.5.5",
     "notistack": "1.0.1",

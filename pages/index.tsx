@@ -1,4 +1,4 @@
-import { Divider, Grid, Typography } from '@material-ui/core';
+import { Divider, Grid, Typography, Link } from '@material-ui/core';
 import React, { ReactElement } from 'react';
 
 export default function Index(): ReactElement {
@@ -12,13 +12,13 @@ export default function Index(): ReactElement {
       <Grid item>
         <Typography>
           Polyfile is a tool to propose, review, and approve{' '}
-          <a href="https://www.filecoin.com/" target="_blank">
+          <Link href="https://www.filecoin.com/" target="_blank">
             Filecoin
-          </a>{' '}
+          </Link>{' '}
           multisig transactions. Polyfile works with the Filecoin App on{' '}
-          <a href="https://www.ledger.com/" target="_blank">
+          <Link href="https://www.ledger.com/" target="_blank">
             Ledger
-          </a>{' '}
+          </Link>{' '}
           hardware wallets .
         </Typography>
       </Grid>

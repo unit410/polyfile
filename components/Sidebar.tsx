@@ -6,18 +6,20 @@ import {
   Button,
   ListItemSecondaryAction,
   IconButton,
+  Link,
 } from '@material-ui/core';
 import React, { ReactElement, useCallback } from 'react';
 import { useDialog } from 'muibox';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import Link from 'next/link';
+import NextLink from 'next/link';
 import { useRouter } from 'next/dist/client/router';
+import { Gitlab } from 'mdi-material-ui';
 
 import MiddleEllipsis from '~/components/MiddleEllipsis';
 import useIsMounted from '~/hooks/useIsMounted';
 import useFavAddresses from '~/hooks/useFavAddresses';
 
-const useStyle = makeStyles(() => ({
+const useStyle = makeStyles((theme) => ({
   root: {
     overflow: 'auto',
     backgroundColor: '#5065d8',
@@ -25,6 +27,16 @@ const useStyle = makeStyles(() => ({
     width: '300px',
     minWidth: '300px',
     flexShrink: 0,
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  spacer: {
+    flexGrow: 1,
+  },
+  footer: {
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: 'white',
   },
 }));
 
@@ -70,35 +82,52 @@ export default function Sidebar(): ReactElement {
 
   return (
     <div className={classes.root}>
-      <List>
-        {favAddresses.map((address) => (
-          <Link key={address} href={{ pathname: '/msig', query: { actor: address } }} passHref>
-            <ListItem button>
-              <Typography
-                style={{ color: 'white', display: 'flex', width: '100%' }}
-                component="div"
-              >
-                <MiddleEllipsis text={address} />
-              </Typography>
-              <ListItemSecondaryAction>
-                <IconButton
-                  size="small"
-                  edge="end"
-                  aria-label="remove"
-                  color="primary"
-                  onClick={() => handleRemoveActor(address)}
+      <div style={{ width: '100%' }}>
+        <List>
+          {favAddresses.map((address) => (
+            <NextLink
+              key={address}
+              href={{ pathname: '/msig', query: { actor: address } }}
+              passHref
+            >
+              <ListItem button>
+                <Typography
+                  style={{ color: 'white', display: 'flex', width: '100%' }}
+                  component="div"
                 >
-                  <HighlightOffIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          </Link>
-        ))}
-      </List>
-      <div style={{ textAlign: 'right' }}>
-        <Button style={{ color: 'white' }} color="primary" onClick={handleAddActor}>
-          Add Multisig Address
-        </Button>
+                  <MiddleEllipsis text={address} />
+                </Typography>
+                <ListItemSecondaryAction>
+                  <IconButton
+                    size="small"
+                    edge="end"
+                    aria-label="remove"
+                    color="primary"
+                    onClick={() => handleRemoveActor(address)}
+                  >
+                    <HighlightOffIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            </NextLink>
+          ))}
+        </List>
+        <div style={{ textAlign: 'right' }}>
+          <Button style={{ color: 'white' }} color="primary" onClick={handleAddActor}>
+            Add Multisig Address
+          </Button>
+        </div>
+      </div>
+      <div className={classes.spacer}></div>
+      <div className={classes.footer}>
+        <Link
+          href="https://gitlab.com/polychainlabs/polyfile"
+          target="_blank"
+          title="source code"
+          color="inherit"
+        >
+          <Gitlab />
+        </Link>
       </div>
     </div>
   );
