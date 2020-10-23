@@ -3,7 +3,7 @@ import React, { ReactElement } from 'react';
 
 export default function Index(): ReactElement {
   return (
-    <Grid container direction="column" spacing={1}>
+    <Grid container direction="column" spacing={2}>
       <Grid item>
         <Typography variant="h2" align="right">
           Welcome to Polyfile!
@@ -30,6 +30,19 @@ export default function Index(): ReactElement {
       </Grid>
       <Grid item>
         <Divider />
+      </Grid>
+      <Grid item>
+        <Typography>
+          Polyfile is open-source and welcomes contributions.{' '}
+          <Link
+            href="https://gitlab.com/polychainlabs/polyfile"
+            target="_blank"
+            title="source code"
+            color="inherit"
+          >
+            gitlab.com/polychainlabs/polyfile
+          </Link>
+        </Typography>
       </Grid>
       <Grid item>
         <Typography variant="caption">
