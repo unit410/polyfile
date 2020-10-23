@@ -94,7 +94,6 @@ export default function Sidebar(): ReactElement {
             </ListItem>
           </Link>
         ))}
-        ;
       </List>
       <div style={{ textAlign: 'right' }}>
         <Button style={{ color: 'white' }} color="primary" onClick={handleAddActor}>
