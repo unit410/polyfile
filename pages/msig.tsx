@@ -7,6 +7,7 @@ import { RefreshRounded } from '@material-ui/icons';
 import { useSnackbar } from 'notistack';
 import { Button, Grid, IconButton, Typography } from '@material-ui/core';
 import Link from 'next/link';
+import { useDebounce } from 'react-use';
 
 import MsigSerialization from '~/common/MsigSerialization';
 import MsigPendingTxn from '~/common/MsigPendingTxn';

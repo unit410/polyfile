@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 import { LinearProgress } from '@material-ui/core';
+import { useDebounce } from 'react-use';
 
 type LoadingIndicatorFn = (show?: boolean) => void;
 
@@ -21,6 +22,7 @@ function useLoadingIndicator(): LoadingIndicatorFn {
 
 export { LoadingIndicatorContext, useLoadingIndicator };
 export default function LoadingIndicatorProvider(props: PropsWithChildren<unknown>): ReactElement {
+  const [showLoadingIndicatorRequest, setShowLoadingIndicatorRequest] = useState(false);
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(false);
   const isMounted = useRef(true);
 
@@ -31,9 +33,18 @@ export default function LoadingIndicatorProvider(props: PropsWithChildren<unknow
     };
   }, []);
 
+  // avoid flickering the loading indicator on rapid changes to loading state
+  useDebounce(
+    () => {
+      setShowLoadingIndicator(showLoadingIndicatorRequest);
+    },
+    50,
+    [showLoadingIndicatorRequest, setShowLoadingIndicator],
+  );
+
   const loadingIndicator: LoadingIndicatorFn = (show = true) => {
     if (isMounted.current) {
-      setShowLoadingIndicator(show);
+      setShowLoadingIndicatorRequest(show);
     }
   };
 
