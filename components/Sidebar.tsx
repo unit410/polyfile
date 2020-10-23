@@ -11,6 +11,7 @@ import React, { ReactElement, useCallback } from 'react';
 import { useDialog } from 'muibox';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import Link from 'next/link';
+import { useRouter } from 'next/dist/client/router';
 
 import MiddleEllipsis from '~/components/MiddleEllipsis';
 import useIsMounted from '~/hooks/useIsMounted';
@@ -31,6 +32,7 @@ export default function Sidebar(): ReactElement {
   const classes = useStyle();
   const dialog = useDialog();
 
+  const router = useRouter();
   const [favAddresses, addFavAddress, removeFavAddress] = useFavAddresses();
   const isMounted = useIsMounted();
 
@@ -58,7 +60,13 @@ export default function Sidebar(): ReactElement {
     }
 
     addFavAddress(address);
-  }, [addFavAddress, dialog, isMounted]);
+    router.push({
+      pathname: '/msig',
+      query: {
+        actor: address,
+      },
+    });
+  }, [addFavAddress, dialog, isMounted, router]);
 
   return (
     <div className={classes.root}>
@@ -90,7 +98,7 @@ export default function Sidebar(): ReactElement {
       </List>
       <div style={{ textAlign: 'right' }}>
         <Button style={{ color: 'white' }} color="primary" onClick={handleAddActor}>
-          Add
+          Add Multisig Address
         </Button>
       </div>
     </div>
