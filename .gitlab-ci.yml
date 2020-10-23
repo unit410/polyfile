@@ -1,0 +1,35 @@
+image: node:14.13.1
+
+stages:
+  - test
+  - deploy
+
+lint:
+  stage: test
+  before_script:
+    - yarn
+  script:
+    - yarn lint
+
+test:
+  stage: test
+  before_script:
+    - yarn
+  script:
+    - yarn test
+
+pages:
+  stage: deploy
+  before_script:
+    - yarn
+  script:
+    - yarn build
+    - yarn next export
+    # If we don't remove public, mv moves out into public which is not what we want
+    - rm -rf public
+    - mv out public
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
