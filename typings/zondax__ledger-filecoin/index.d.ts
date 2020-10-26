@@ -46,8 +46,6 @@ declare module '@zondax/ledger-filecoin' {
   } & BaseResponse;
 
   class FilecoinApp {
-    transport: Transport;
-
     constructor(transport: Transport);
 
     async getAddressAndPubKey(path: string): Promise<AddressAndPubkeyResponse>;
@@ -57,6 +55,12 @@ declare module '@zondax/ledger-filecoin' {
     async appInfo(): Promise<AppInfoResponse>;
   }
 
-  export type { AddressAndPubkeyResponse };
+  export type {
+    AddressAndPubkeyResponse,
+    SignResponse,
+    DeviceInfoResponse,
+    AppInfoResponse,
+    VersionResponse,
+  };
   export default FilecoinApp;
 }

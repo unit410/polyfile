@@ -9,6 +9,7 @@ const useStyle = makeStyles({
     backgroundColor: 'grey',
     borderRadius: '4px',
     margin: '1px',
+    marginRight: '3px',
   },
 });
 

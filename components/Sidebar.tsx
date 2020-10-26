@@ -8,7 +8,7 @@ import {
   IconButton,
   Link,
 } from '@material-ui/core';
-import React, { ReactElement, useCallback } from 'react';
+import React, { ReactElement, useCallback, useMemo } from 'react';
 import { useDialog } from 'muibox';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import NextLink from 'next/link';
@@ -44,7 +44,8 @@ const useStyle = makeStyles((theme) => ({
   gutter: {
     ...theme.typography.body1,
     color: 'white',
-    padding: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
     borderTop: '2px groove #858eaf1f',
     borderBottom: '2px groove #858eaf1f',
   },
@@ -100,6 +101,42 @@ export default function Sidebar(): ReactElement {
     });
   }, [addFavAddress, dialog, isMounted, router]);
 
+  const ledgerStatus = useMemo(() => {
+    if (!ledgerApp || !appInfo) {
+      return (
+        <ListItem>
+          <StatusDot variant="error" /> Ledger Not Connected
+        </ListItem>
+      );
+    }
+
+    if (appInfoErr) {
+      return (
+        <ListItem>
+          <StatusDot variant="error" /> {appInfoErr.message}
+        </ListItem>
+      );
+    }
+
+    if (!appInfo || appInfo?.appName !== 'Filecoin') {
+      return (
+        <ListItem>
+          <StatusDot variant="warning" /> Filecoin App not open
+        </ListItem>
+      );
+    }
+
+    return (
+      <>
+        <NextLink href="/settings">
+          <ListItem button>
+            <StatusDot variant="ok" /> Ledger Connected
+          </ListItem>
+        </NextLink>
+      </>
+    );
+  }, [appInfo, appInfoErr, ledgerApp]);
+
   return (
     <div className={classes.root}>
       <div style={{ width: '100%' }}>
@@ -139,28 +176,7 @@ export default function Sidebar(): ReactElement {
         </div>
       </div>
       <div className={classes.spacer} />
-      <div className={classes.gutter}>
-        {(!ledgerApp || !appInfo) && (
-          <>
-            <StatusDot variant="error" /> Ledger Not Connected
-          </>
-        )}
-        {appInfoErr && (
-          <>
-            <StatusDot variant="error" /> {appInfoErr.message}
-          </>
-        )}
-        {appInfo && appInfo?.appName !== 'Filecoin' && (
-          <>
-            <StatusDot variant="warning" /> Filecoin App not open
-          </>
-        )}
-        {appInfo?.appName === 'Filecoin' && (
-          <>
-            <StatusDot variant="ok" /> Ledger Connected
-          </>
-        )}
-      </div>
+      <div className={classes.gutter}>{ledgerStatus}</div>
       <div className={classes.footer}>
         <Link
           href="https://gitlab.com/polychainlabs/polyfile"

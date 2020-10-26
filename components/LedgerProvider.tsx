@@ -1,6 +1,7 @@
 import Transport from '@ledgerhq/hw-transport-webusb';
 import { ReactNode, ReactElement, useState, useEffect, createContext, useContext } from 'react';
-import FilecoinApp from '@zondax/ledger-filecoin';
+import type FilecoinApp from '@zondax/ledger-filecoin';
+import QueuingFilecoinLedgerApp from '~/common/QueuingFilecoinLedgerApp';
 import useAsync from '~/hooks/useAsync';
 
 const LedgerAppContext = createContext<FilecoinApp | null>(null);
@@ -55,7 +56,7 @@ export default function LedgerProvider(props: { children?: ReactNode }): ReactEl
       setReconnect((old) => !old);
     });
 
-    setApp(new FilecoinApp(transport));
+    setApp(new QueuingFilecoinLedgerApp(transport));
 
     return () => {
       transport.close();
