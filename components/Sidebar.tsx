@@ -18,6 +18,9 @@ import { Gitlab } from 'mdi-material-ui';
 import MiddleEllipsis from '~/components/MiddleEllipsis';
 import useIsMounted from '~/hooks/useIsMounted';
 import useFavAddresses from '~/hooks/useFavAddresses';
+import StatusDot from './StatusDot';
+import { useLedger } from './LedgerProvider';
+import useAsync from '~/hooks/useAsync';
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -38,6 +41,13 @@ const useStyle = makeStyles((theme) => ({
     textAlign: 'center',
     color: 'white',
   },
+  gutter: {
+    ...theme.typography.body1,
+    color: 'white',
+    padding: theme.spacing(2),
+    borderTop: '2px groove #858eaf1f',
+    borderBottom: '2px groove #858eaf1f',
+  },
 }));
 
 export default function Sidebar(): ReactElement {
@@ -47,6 +57,16 @@ export default function Sidebar(): ReactElement {
   const router = useRouter();
   const [favAddresses, addFavAddress, removeFavAddress] = useFavAddresses();
   const isMounted = useIsMounted();
+
+  const ledgerApp = useLedger();
+
+  const [appInfo, appInfoErr] = useAsync(async () => {
+    if (!ledgerApp) {
+      return;
+    }
+
+    return ledgerApp.appInfo();
+  }, [ledgerApp]);
 
   const handleRemoveActor = useCallback(
     (address) => {
@@ -118,7 +138,29 @@ export default function Sidebar(): ReactElement {
           </Button>
         </div>
       </div>
-      <div className={classes.spacer}></div>
+      <div className={classes.spacer} />
+      <div className={classes.gutter}>
+        {(!ledgerApp || !appInfo) && (
+          <>
+            <StatusDot variant="error" /> Ledger Not Connected
+          </>
+        )}
+        {appInfoErr && (
+          <>
+            <StatusDot variant="error" /> {appInfoErr.message}
+          </>
+        )}
+        {appInfo && appInfo?.appName !== 'Filecoin' && (
+          <>
+            <StatusDot variant="warning" /> Filecoin App not open
+          </>
+        )}
+        {appInfo?.appName === 'Filecoin' && (
+          <>
+            <StatusDot variant="ok" /> Ledger Connected
+          </>
+        )}
+      </div>
       <div className={classes.footer}>
         <Link
           href="https://gitlab.com/polychainlabs/polyfile"

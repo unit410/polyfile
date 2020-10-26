@@ -28,6 +28,7 @@ export default function useAsync<T, ErrorT = Error>(
     fnWithDeps()
       .then((val) => {
         if (isMountedRef.current) {
+          setError(null);
           setLoading(false);
           setVal(val);
         }
@@ -36,6 +37,7 @@ export default function useAsync<T, ErrorT = Error>(
         if (isMountedRef.current) {
           setLoading(false);
           setError(err);
+          setVal(undefined);
         }
       });
   }, [fnWithDeps]);

@@ -13,6 +13,7 @@ import { useRouter } from 'next/dist/client/router';
 import LoadingIndicatorProvider from '~/components/LoadingIndicatorProvider';
 import ColumnLayout from '~/components/ColumnLayout';
 import Page from '~/components/Page';
+import LedgerProvider from '~/components/LedgerProvider';
 
 // sidebar loads useLocalStorage which uses CustomEvent that is not available when compiling in node
 // just wrapping in <NoSsr> is not sufficient since next tries to compile the file for SSR use
@@ -79,10 +80,12 @@ export default function App(props: AppProps): ReactElement {
             <SnackbarProvider maxSnack={5}>
               <DialogProvider>
                 <ColumnLayout>
-                  <Sidebar />
-                  <Page>
-                    <Component {...pageProps} />
-                  </Page>
+                  <LedgerProvider>
+                    <Sidebar />
+                    <Page>
+                      <Component {...pageProps} />
+                    </Page>
+                  </LedgerProvider>
                 </ColumnLayout>
               </DialogProvider>
             </SnackbarProvider>

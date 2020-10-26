@@ -16,7 +16,7 @@ import { MsigMethodToString } from '~/common/MsigMethod';
 import Address from '~/common/Address';
 import TokenAmount from './TokenAmount';
 import { useLoadingIndicator } from './LoadingIndicatorProvider';
-import ApprovedIndicatorDot from './ApprovedIndicatorDot';
+import StatusDot from './StatusDot';
 import useIsMounted from '~/hooks/useIsMounted';
 
 type PendingTxnCardProps = {
@@ -127,8 +127,8 @@ export default function PendingTxnCard(props: PendingTxnCardProps): ReactElement
               {approvalsList.map((entry, idx) => {
                 return (
                   <div key={entry.idAddress.toString()}>
-                    <ApprovedIndicatorDot value={entry.approved} /> {entry.address.toString()}{' '}
-                    {idx === 0 && <Chip label="proposer" size="small" />}
+                    <StatusDot variant={entry.approved ? 'ok' : 'warning'} />{' '}
+                    {entry.address.toString()} {idx === 0 && <Chip label="proposer" size="small" />}
                   </div>
                 );
               })}
