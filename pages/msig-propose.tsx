@@ -84,6 +84,10 @@ export default function MsigPropose(): ReactElement {
   }, [actorState, lotusClient]);
 
   const [walletAddresses] = useAsync(async () => {
+    if (!wallet) {
+      return [];
+    }
+
     return wallet.addresses();
   }, [wallet]);
 

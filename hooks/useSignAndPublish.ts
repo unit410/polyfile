@@ -24,6 +24,10 @@ export default function useSignAndPublish(): PoolPushFn {
 
   return useCallback(
     async (address: WalletAddress, message: Message) => {
+      if (!wallet) {
+        throw new Error('Wallet required to sign');
+      }
+
       const nonce = await lotusClient.mpoolGetNonce(message.from);
       message.nonce = nonce;
 

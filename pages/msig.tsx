@@ -97,7 +97,7 @@ export default function MsigInspect(): ReactElement {
 
   const approveOrCancel = useCallback(
     async (method: MsigMethod.Approve | MsigMethod.Cancel, txn: MsigPendingTxn) => {
-      if (!activeActor || !allApprovers) {
+      if (!activeActor || !allApprovers || !wallet) {
         return;
       }
 
