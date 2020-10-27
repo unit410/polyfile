@@ -17,6 +17,7 @@
     "@rehooks/local-storage": "2.4.0",
     "@types/muibox": "1.3.1",
     "@zondax/ledger-filecoin": "0.11.2",
+    "async-mutex": "0.2.4",
     "base32-decode": "1.0.0",
     "base32-encode": "1.1.1",
     "big.js": "6.0.1",
