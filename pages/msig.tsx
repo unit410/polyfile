@@ -154,7 +154,7 @@ export default function MsigInspect(): ReactElement {
         value: BigInt('0'),
         method,
         params: MsigSerialization.TxnIdParams.ToBuffer(txnIdParams),
-        gasfeecap: BigInt('1000'),
+        gasfeecap: BigInt('0'),
         gaspremium: BigInt('1000'),
         gaslimit: 0,
       };

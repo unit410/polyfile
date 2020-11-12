@@ -123,6 +123,19 @@ class LotusRpc {
     return resp;
   }
 
+  async gasEstimateFeeCap(message: Message, maxQueueBlocks: number, cids: Cid[]): Promise<number> {
+    const lotusMessage = {
+      To: message.to.toString(),
+      From: message.from.toString(),
+      Nonce: message.nonce,
+      Value: message.value.toString(),
+      Method: message.method,
+      Params: message.params.toString('base64'),
+    };
+
+    return await this.request<number>('GasEstimateFeeCap', lotusMessage, maxQueueBlocks, cids);
+  }
+
   async request<T>(method: string, ...params: unknown[]): Promise<T> {
     const resp = await fetch(this.#endpoint, {
       method: 'post',
