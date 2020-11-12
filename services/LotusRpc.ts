@@ -17,6 +17,12 @@ interface ChainHead {
   Cids: Cid[];
 }
 
+interface MessageGas {
+  GasFeeCap: string;
+  GasLimit: number;
+  GasPremium: string;
+}
+
 class LotusRpc {
   #endpoint: string;
 
@@ -121,6 +127,36 @@ class LotusRpc {
 
     const resp = await this.request<number>('GasEstimateGasLimit', lotusMessage, cids);
     return resp;
+  }
+
+  async gasEstimateMessageGas(message: Message, cids: Cid[]): Promise<MessageGas> {
+    const lotusMessage = {
+      To: message.to.toString(),
+      From: message.from.toString(),
+      Nonce: message.nonce,
+      Value: message.value.toString(),
+      Method: message.method,
+      Params: message.params.toString('base64'),
+    };
+
+    // filecoin token amount has 18 decimal places (attoFil)
+    // here we specify 1 filecoin as the maximum
+    const sendSpec = {
+      MaxFee: '1000000000000000000',
+    };
+
+    const res = await this.request<MessageGas>(
+      'GasEstimateMessageGas',
+      lotusMessage,
+      sendSpec,
+      cids,
+    );
+
+    return {
+      GasPremium: res.GasPremium,
+      GasFeeCap: res.GasFeeCap,
+      GasLimit: res.GasLimit,
+    };
   }
 
   async gasEstimateFeeCap(message: Message, maxQueueBlocks: number, cids: Cid[]): Promise<number> {

@@ -32,13 +32,11 @@ export default function useSignAndPublish(): PoolPushFn {
       message.nonce = nonce;
 
       const head = await lotusClient.chainHead();
-      const gasEstimate = await lotusClient.gasEstimateGasLimit(message, head.Cids);
+      const gasEstimate = await lotusClient.gasEstimateMessageGas(message, head.Cids);
 
-      const maxQueueBlocks = 2; // try to get our transactions accepted within 2 blocks
-      const gasFeeCap = await lotusClient.gasEstimateFeeCap(message, maxQueueBlocks, head.Cids);
-
-      message.gasfeecap = BigInt(`${gasFeeCap}`);
-      message.gaslimit = gasEstimate;
+      message.gaspremium = BigInt(gasEstimate.GasPremium);
+      message.gasfeecap = BigInt(gasEstimate.GasFeeCap);
+      message.gaslimit = gasEstimate.GasLimit;
 
       const signSnackbarKey = enqueueSnackbar('Review transaction on ledger', {
         variant: 'info',
