@@ -62,15 +62,22 @@ export default function PendingTxnCard(props: PendingTxnCardProps): ReactElement
       });
   }, [showLoadingIndicator, props, isMounted]);
 
+  // the approvals list identifies which signers have already approved the transaction
   const approvalsList = useMemo(() => {
-    const approved = new Set<string>(txn.approved.map((addr) => addr.toString()));
+    const approved = txn.approved.map((addr) => addr.toString()).reverse();
 
-    const list = new Array<{ approved: boolean; idAddress: Address; address: Address }>();
+    const list = new Array<{
+      proposer: boolean;
+      approved: boolean;
+      idAddress: Address;
+      address: Address;
+    }>();
     for (const [key, value] of props.approvers.entries()) {
-      const alreadyApproved = approved.has(key.toString());
+      const approvedIdx = approved.indexOf(key.toString());
 
       list.push({
-        approved: alreadyApproved,
+        approved: approvedIdx >= 0,
+        proposer: approvedIdx === 0,
         idAddress: key,
         address: value,
       });
@@ -124,11 +131,12 @@ export default function PendingTxnCard(props: PendingTxnCardProps): ReactElement
           <Grid item>
             <Typography variant="subtitle1">Signers</Typography>
             <Typography component="div">
-              {approvalsList.map((entry, idx) => {
+              {approvalsList.map((entry) => {
                 return (
                   <div key={entry.idAddress.toString()}>
                     <StatusDot variant={entry.approved ? 'ok' : 'warning'} />{' '}
-                    {entry.address.toString()} {idx === 0 && <Chip label="proposer" size="small" />}
+                    {entry.address.toString()}{' '}
+                    {entry.proposer && <Chip label="proposer" size="small" />}
                   </div>
                 );
               })}
