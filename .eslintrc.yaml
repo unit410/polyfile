@@ -18,7 +18,9 @@ extends:
 
 rules:
   '@typescript-eslint/camelcase': 'off'
-  '@typescript-eslint/no-unused-vars': 'error'
+  '@typescript-eslint/no-unused-vars':
+    - 'error'
+    - varsIgnorePattern: '^_'
   'prettier/prettier': 'error'
   'react-hooks/exhaustive-deps':
     - 'error'

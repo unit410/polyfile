@@ -12,22 +12,17 @@ function useLedger(): FilecoinApp | null {
 
 export { useLedger };
 export default function LedgerProvider(props: { children?: ReactNode }): ReactElement {
-  const [reconnect, setReconnect] = useState(true);
   const [app, setApp] = useState<FilecoinApp | null>(null);
 
-  const [transport] = useAsync(async () => {
-    // flag to trigger reconnect
-    // silences hook unused dependency error
-    reconnect;
-
+  const [transport, _error, _loading, refresh] = useAsync(async () => {
     const isSupported = await Transport.isSupported();
     console.log('Transport[WebUSB]:Supported =', isSupported);
     if (!isSupported) {
       return;
     }
 
-    return Transport.create();
-  }, [reconnect]);
+    return Transport.openConnected();
+  }, []);
 
   // An enhancement here would be to use the "listen" feature of Transport
   // That would notify when a device is connected
@@ -37,13 +32,13 @@ export default function LedgerProvider(props: { children?: ReactNode }): ReactEl
     }
 
     const reconnectInterval = setInterval(() => {
-      setReconnect((old) => !old);
+      refresh();
     }, 1000 * 5);
 
     return () => {
       clearInterval(reconnectInterval);
     };
-  }, [transport]);
+  }, [transport, refresh]);
 
   useEffect(() => {
     if (!transport) {
@@ -53,16 +48,16 @@ export default function LedgerProvider(props: { children?: ReactNode }): ReactEl
     transport.on('disconnect', () => {
       console.log('Transport disconnect');
       setApp(null);
-      setReconnect((old) => !old);
+      refresh();
     });
 
     setApp(new FilecoinLedgerApp(transport));
 
     return () => {
       transport.close();
-      setReconnect((old) => !old);
+      refresh();
     };
-  }, [transport]);
+  }, [transport, refresh]);
 
   return <LedgerAppContext.Provider value={app}>{props.children}</LedgerAppContext.Provider>;
 }
