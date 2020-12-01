@@ -6,6 +6,7 @@ import type MsigTxnIdParams from './MsigTxnIdParams';
 import type MsigProposeParams from './MsigProposeParams';
 import type Message from './Message';
 import MsigAddSignerParams from './MsigAddSignerParams';
+import { BufferReader } from 'protobufjs';
 
 function serializeBigint(bigint: BigInt): Buffer {
   // zero values can use an empty buffer
@@ -41,7 +42,15 @@ export default {
 
         for (const pendingTx of entry) {
           const txidRaw = pendingTx[0];
-          const txId = txidRaw.readIntBE(0, txidRaw.length) >> 1;
+
+          // lotus serializes the transaction id using golang encoding/binary
+          // which implements variant encoding for signed integers following protocol buffers
+          // https://developers.google.com/protocol-buffers/docs/encoding#signed_integers
+          const reader = new BufferReader(txidRaw);
+          // the return type annotation is wrong on sint64
+          // in-browser testing shows it returns a number not a Long as documented
+          const txId = (reader.sint64() as unknown) as number;
+
           const detail = pendingTx[1];
 
           const to = Address.FromBuffer(detail[0]);
