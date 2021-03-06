@@ -204,6 +204,7 @@ export default function MsigInspect(): ReactElement {
     const possibleErrs = [headErr, actorStateErr, spendableErr, pendingTxnsErr, allApproversErr];
     for (const err of possibleErrs) {
       if (err) {
+        console.error(err);
         enqueueSnackbar(err.message, { variant: 'error' });
       }
     }
