@@ -34,43 +34,56 @@ export default {
     FromBuffer: (buffer: Buffer): MsigPendingTxn[] => {
       const decoded = cbor.decode(buffer);
 
-      const encodedTxns = decoded[1];
       const pendingTxns = new Array<MsigPendingTxn>();
 
-      for (const encodedTxn of encodedTxns) {
-        const entry = encodedTxn[1];
+      // https://github.com/filecoin-project/specs-actors/blob/845089a6d2580e46055c24415a6c32ee688e5186/actors/builtin/multisig/multisig_state.go#L24
+      // The decoded cbor represents a HAMT[TxId] => Transaction
+      // extractTxn recursively goes through the decoded cbor array looking for a tuple of [txnid, transaction]
+      // If the tuple is found, parse it into our pendingTxn. Continue recursing until all txn parsed.
+      function extractTxn(array: unknown[]) {
+        if (array.length === 2) {
+          const maybeTxId = array[0];
+          const maybeTxn = array[1];
+          if (maybeTxId instanceof Uint8Array && Array.isArray(maybeTxn) && maybeTxn.length === 5) {
+            // lotus serializes the transaction id using golang encoding/binary
+            // which implements variant encoding for signed integers following protocol buffers
+            // https://developers.google.com/protocol-buffers/docs/encoding#signed_integers
+            const reader = new BufferReader(maybeTxId);
+            // the return type annotation is wrong on sint64
+            // in-browser testing shows it returns a number not a Long as documented
+            const txId = (reader.sint64() as unknown) as number;
 
-        for (const pendingTx of entry) {
-          const txidRaw = pendingTx[0];
+            // parse
+            const to = Address.FromBuffer(maybeTxn[0]);
 
-          // lotus serializes the transaction id using golang encoding/binary
-          // which implements variant encoding for signed integers following protocol buffers
-          // https://developers.google.com/protocol-buffers/docs/encoding#signed_integers
-          const reader = new BufferReader(txidRaw);
-          // the return type annotation is wrong on sint64
-          // in-browser testing shows it returns a number not a Long as documented
-          const txId = (reader.sint64() as unknown) as number;
+            const valueRaw = Buffer.from(maybeTxn[1]);
+            const value = valueRaw.length > 0 ? BigInt(`0x${valueRaw.toString('hex')}`) : 0n;
+            const method = maybeTxn[2];
+            const params = maybeTxn[3];
+            const approved = (maybeTxn[4] as Buffer[]).map((item) => Address.FromBuffer(item));
 
-          const detail = pendingTx[1];
+            pendingTxns.push({
+              id: txId,
+              to,
+              value,
+              method,
+              params,
+              approved,
+            });
+            return;
+          }
+        }
 
-          const to = Address.FromBuffer(detail[0]);
-          const valueRaw = detail[1];
-          const value = valueRaw.length > 0 ? BigInt(`0x${valueRaw.toString('hex')}`) : 0n;
-          const method = detail[2];
-          const params = detail[3];
-          const approved = (detail[4] as Buffer[]).map((item) => Address.FromBuffer(item));
+        if (!Array.isArray(array)) {
+          return;
+        }
 
-          pendingTxns.push({
-            id: txId,
-            to,
-            value,
-            method,
-            params,
-            approved,
-          });
+        for (const item of array) {
+          extractTxn(item as unknown[]);
         }
       }
 
+      extractTxn(decoded);
       return pendingTxns;
     },
   },
