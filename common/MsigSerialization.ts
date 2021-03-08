@@ -44,7 +44,7 @@ export default {
         if (array.length === 2) {
           const maybeTxId = array[0];
           const maybeTxn = array[1];
-          if (maybeTxId instanceof Uint8Array && Array.isArray(maybeTxn) && maybeTxn.length === 5) {
+          if (maybeTxId instanceof Uint8Array && maybeTxId.length === 2 && Array.isArray(maybeTxn) && maybeTxn.length === 5) {
             // lotus serializes the transaction id using golang encoding/binary
             // which implements variant encoding for signed integers following protocol buffers
             // https://developers.google.com/protocol-buffers/docs/encoding#signed_integers
