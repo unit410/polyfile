@@ -1,4 +1,4 @@
-import Transport from '@ledgerhq/hw-transport-webusb';
+import Transport from '@ledgerhq/hw-transport-webhid';
 import { ReactNode, ReactElement, useState, useEffect, createContext, useContext } from 'react';
 import type FilecoinApp from '@zondax/ledger-filecoin';
 import FilecoinLedgerApp from '~/common/FilecoinLedgerApp';

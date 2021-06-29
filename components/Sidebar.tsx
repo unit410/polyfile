@@ -21,6 +21,7 @@ import useFavAddresses from '~/hooks/useFavAddresses';
 import StatusDot from './StatusDot';
 import { useLedger } from './LedgerProvider';
 import useAsync from '~/hooks/useAsync';
+import Transport from '@ledgerhq/hw-transport-webhid';
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -104,8 +105,8 @@ export default function Sidebar(): ReactElement {
   const ledgerStatus = useMemo(() => {
     if (!ledgerApp || !appInfo) {
       return (
-        <ListItem>
-          <StatusDot variant="error" /> Ledger Not Connected
+        <ListItem onClick={() => Transport.request().then(() => location.reload())}>
+          <StatusDot variant="error" /> Ledger Not Connected, Click to Connect
         </ListItem>
       );
     }
