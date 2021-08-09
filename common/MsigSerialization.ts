@@ -46,7 +46,6 @@ export default {
           const maybeTxn = array[1];
           if (
             maybeTxId instanceof Uint8Array &&
-            maybeTxId.length === 2 &&
             Array.isArray(maybeTxn) &&
             maybeTxn.length === 5
           ) {
