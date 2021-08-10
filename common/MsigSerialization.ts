@@ -44,11 +44,7 @@ export default {
         if (array.length === 2) {
           const maybeTxId = array[0];
           const maybeTxn = array[1];
-          if (
-            maybeTxId instanceof Uint8Array &&
-            Array.isArray(maybeTxn) &&
-            maybeTxn.length === 5
-          ) {
+          if (maybeTxId instanceof Uint8Array && Array.isArray(maybeTxn) && maybeTxn.length === 5) {
             // lotus serializes the transaction id using golang encoding/binary
             // which implements variant encoding for signed integers following protocol buffers
             // https://developers.google.com/protocol-buffers/docs/encoding#signed_integers
@@ -58,23 +54,26 @@ export default {
             const txId = (reader.sint64() as unknown) as number;
 
             // parse
-            const to = Address.FromBuffer(maybeTxn[0]);
+            try {
+              const to = Address.FromBuffer(maybeTxn[0]);
+              const valueRaw = Buffer.from(maybeTxn[1]);
+              const value = valueRaw.length > 0 ? BigInt(`0x${valueRaw.toString('hex')}`) : 0n;
+              const method = maybeTxn[2];
+              const params = maybeTxn[3];
+              const approved = (maybeTxn[4] as Buffer[]).map((item) => Address.FromBuffer(item));
 
-            const valueRaw = Buffer.from(maybeTxn[1]);
-            const value = valueRaw.length > 0 ? BigInt(`0x${valueRaw.toString('hex')}`) : 0n;
-            const method = maybeTxn[2];
-            const params = maybeTxn[3];
-            const approved = (maybeTxn[4] as Buffer[]).map((item) => Address.FromBuffer(item));
-
-            pendingTxns.push({
-              id: txId,
-              to,
-              value,
-              method,
-              params,
-              approved,
-            });
-            return;
+              pendingTxns.push({
+                id: txId,
+                to,
+                value,
+                method,
+                params,
+                approved,
+              });
+              return;
+            } catch (err) {
+              // ignore error as we tried to recursively parse something that wasn't valid
+            }
           }
         }
 
