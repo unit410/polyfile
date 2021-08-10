@@ -15,10 +15,10 @@ class LedgerWallet implements Wallet {
   async addresses(): Promise<WalletAddress[]> {
     const addresses = new Array<WalletAddress>();
 
-    // Load the first 5 addresses from the ledger
+    // Load the first 10 addresses from the ledger
     // This path is compatible with glif wallet addresses when using ledger
     const pathBase = "m/44'/461'/0'/0";
-    for (let i = 0; i < 5; ++i) {
+    for (let i = 0; i < 10; ++i) {
       const path = `${pathBase}/${i}`;
       const addrResponse = await this.#app.getAddressAndPubKey(path);
       if (addrResponse.error_message !== 'No errors') {
