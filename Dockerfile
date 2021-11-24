@@ -1,4 +1,4 @@
-FROM node:14.17-alpine as base
+FROM node:14.18-alpine as base
 FROM base as builder
 
 ENV NEXT_TELEMETRY_DISABLED=1
