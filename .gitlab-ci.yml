@@ -4,6 +4,9 @@ stages:
   - test
   - deploy
 
+variables:
+  SENTRY_DSN: $SENTRY_DSN
+
 lint:
   stage: test
   before_script:
