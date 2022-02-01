@@ -3,7 +3,6 @@ import Cid from '~/common/Cid';
 import Message from '~/common/Message';
 import MsigActorState from '~/common/MsigActorState';
 import MsigPendingTxn from '~/common/MsigPendingTxn';
-import { MsigMethod } from '~/common/MsigMethod';
 import SignedMessage from '~/common/SignedMessage';
 
 // https://github.com/filecoin-project/lotus/blob/master/api/api_full.go
@@ -118,52 +117,26 @@ class LotusRpc {
   }
 
   async msigGetPendingTxns(address: Address, cids: Cid[]): Promise<MsigPendingTxn[]> {
-    const resp = await this.request<string>('MsigGetPending', address.toString(), cids);
-    const pendingTxns = new Array<MsigPendingTxn>();
-
-    // Artisanal type conversion. Using the exact API(MsigGetPending) allows us to unmarshal nested interfaces using
-    // their field names as opposed to using arbitrary indexes inside of raw byte buffer which can be error prone.
-    Object.keys(resp).forEach(function (key: string) {
-      const approvedAddrs = new Array<Address>();
-      const pendingTxn = <MsigPendingTxn>{};
-      const rawTxn = resp[key];
-
-      Object.keys(rawTxn).forEach(function (field) {
-        switch (field) {
-          case 'ID':
-            pendingTxn.id = <number>rawTxn[field];
-            break;
-          case 'To':
-            pendingTxn.to = Address.FromString(<string>rawTxn[field]);
-            break;
-          case 'Value':
-            pendingTxn.value = <BigInt>rawTxn[field];
-            break;
-          case 'Method':
-            pendingTxn.method = <MsigMethod>rawTxn[field];
-            break;
-          case 'Params':
-            pendingTxn.params = <Buffer>rawTxn[field];
-            // Fixes crash at PendingTxnCard.tsx#L127 where we check params.length < 0
-            if (pendingTxn.params == null) {
-              pendingTxn.params = <Buffer>{};
-            }
-            break;
-          case 'Approved':
-            for (const a of <string>rawTxn[field]) {
-              const addr = Address.FromString(a);
-              approvedAddrs.push(addr);
-            }
-            pendingTxn.approved = approvedAddrs;
-            break;
-          default:
-            console.log('field not supported');
-        }
-      });
-      pendingTxns.push(pendingTxn);
-    });
-
-    return pendingTxns;
+    interface Result {
+      ID: number;
+      To: string;
+      Value: string;
+      Method: number;
+      Params: string | null;
+      Approved: string[];
+    }
+    const resp: Result[] = await this.request('MsigGetPending', address.toString(), cids);
+    return resp.map(
+      (r) =>
+        <MsigPendingTxn>{
+          id: r.ID,
+          to: Address.FromString(r.To),
+          value: BigInt(r.Value),
+          method: r.Method,
+          params: r.Params == null ? Buffer.from([]) : Buffer.from(r.Params, 'hex'),
+          approved: r.Approved.map(Address.FromString),
+        },
+    );
   }
 
   async gasEstimateGasLimit(message: Message, cids: Cid[]): Promise<number> {
