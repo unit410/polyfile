@@ -61,16 +61,18 @@ export default function MsigInspect(): ReactElement {
   }, [activeActor, head, lotusClient]);
 
   const [pendingTxns, pendingTxnsErr, pendingTxnsLoading] = useAsync(async () => {
-    if (!actorState) {
+    if (!activeActor || !head) {
       return null;
     }
 
-    const pendingObj = await lotusClient.chainReadObj(actorState.state.pendingTxns);
-    const txns = MsigSerialization.PendingTxns.FromBuffer(pendingObj);
-    return txns.sort((a, b) => {
+    const pendingTxns = await lotusClient.msigGetPendingTxns(
+      Address.FromString(activeActor),
+      head.Cids,
+    );
+    return pendingTxns.sort((a, b) => {
       return a.id - b.id;
     });
-  }, [actorState, lotusClient]);
+  }, [activeActor, head, lotusClient]);
 
   const [allApprovers, allApproversErr, allApproversLoading] = useAsync(async () => {
     if (!actorState || !head) {
