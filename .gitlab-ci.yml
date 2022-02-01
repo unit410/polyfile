@@ -16,6 +16,7 @@ test:
   before_script:
     - yarn
   script:
+    - yarn build
     - yarn test
 
 pages:
