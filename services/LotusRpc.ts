@@ -199,6 +199,10 @@ class LotusRpc {
   async request<T>(method: string, ...params: unknown[]): Promise<T> {
     const resp = await fetch(this.#endpoint, {
       method: 'post',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
         jsonrpc: '2.0',
         method: `Filecoin.${method}`,
