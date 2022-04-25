@@ -180,7 +180,7 @@ export default function Sidebar(): ReactElement {
       <div className={classes.gutter}>{ledgerStatus}</div>
       <div className={classes.footer}>
         <Link
-          href="https://gitlab.com/polychainlabs/polyfile"
+          href="https://gitlab.com/unit410/polyfile"
           target="_blank"
           title="source code"
           color="inherit"

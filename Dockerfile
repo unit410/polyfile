@@ -31,4 +31,3 @@ COPY --from=builder /app/node_modules /app/node_modules
 # COPY --from=builder /app/next.config.js /app/
 
 CMD ["yarn", "start", "--port", "8080"]
-

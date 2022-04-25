@@ -35,12 +35,12 @@ export default function Index(): ReactElement {
         <Typography>
           Polyfile is open-source and welcomes contributions.{' '}
           <Link
-            href="https://gitlab.com/polychainlabs/polyfile"
+            href="https://gitlab.com/unit410/polyfile"
             target="_blank"
             title="source code"
             color="inherit"
           >
-            gitlab.com/polychainlabs/polyfile
+            gitlab.com/unit410/polyfile
           </Link>
         </Typography>
       </Grid>
